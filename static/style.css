@@ -1,0 +1,145 @@
+#btMoveFW, #btMoveB, #btMoveFW2, #btMoveB2{
+  margin-left: 31px;
+}
+
+#cube-control{
+  visibility:hidden;
+}
+
+body{
+  padding-left:50px;
+  padding-top: 2px;
+}
+
+#driving2{
+  margin-top: 30px;
+}
+
+#slider1, #slider2{
+  margin-left:100px;
+  width: 200px;
+  height: 25px;
+}
+
+
+
+#slider1::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  background:#2196F3;
+  cursor: pointer;
+}
+
+#slider2::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  background:#f55722;
+  cursor: pointer;
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 25px;
+  background: #d3d3d3;
+  outline: none;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+
+
+#slider1::-moz-range-progress {
+  background-color: #2196F3;
+}
+
+
+#slider2::-moz-range-progress {
+  background-color: #f55722;
+}
+
+.slider::-ms-fill-lower {
+    background: #2196F3 !important;
+    border-radius: 0px;
+}
+
+.slider::-ms-fill-upper {
+    background: #d3d3d3;
+    border-radius: 10px;
+}
+
+
+#slider1::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  background: #2196F3;
+  cursor: pointer;
+}
+
+#slider2::-moz-range-thumb {
+  background: #f55722;
+}
+
+#cube2control button{
+  background: #f55722 !important;
+}
+
+#Charge, #Charge2{
+  margin-left: 100px;
+}
+
+h4{
+  margin-left:100px;
+  margin-bottom:-10px;
+}
+
+#cube1, #cube2{
+  margin-bottom: 20px;
+}
+
+#cube1control, #cube2control{
+  margin-top: 50px;
+}
+
+#cube-control{
+  margin-top: -100px;
+}
+
+.position h3{
+  display:inline;
+  margin-right: 30px;
+}
+
+#canvas{
+  border:1px rgb(200,200,200) solid;
+  border-radius:10px;
+  width: 250px;
+  height: 250px;
+}
+
+#toio{
+  width:45px;
+  height:45px;
+  background-color: #46b1e3;
+  border-radius:10px;
+  filter: drop-shadow(3px 3px 2px rgba(0,0,0,.2));
+  position: relative;
+  left: 20px;
+  top: 20px;
+}
+
+.position, #light{
+  margin-top: 40px;
+}
+
+#getPos{
+  display:block;
+}
+
+#light{
+  margin-bottom: 40px;
+}

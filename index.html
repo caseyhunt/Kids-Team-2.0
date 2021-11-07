@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Toio Canvas Clicker</title>
+
+  <!-- Webapp settings -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Favion -->
+  <link rel="icon" href="./images/favicon.ico">
+
+  <!-- Stylesheet -->
+  <link href="https://cdn.muicss.com/mui-0.10.0/css/mui.min.css" rel="stylesheet" type="text/css"/>
+  <script src="https://cdn.muicss.com/mui-0.10.0/js/mui.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="static/style.css">
+  <link href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" rel="stylesheet">
+
+  <!-- dropify(overrides file input) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <link rel='stylesheet' href='https://cdn.rawgit.com/JeremyFagis/dropify/master/dist/css/dropify.min.css'/>
+  <script src='https://cdn.rawgit.com/JeremyFagis/dropify/master/dist/js/dropify.min.js'></script>
+
+  <!-- Code prettify -->
+  <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+</head>
+<body>
+  <H1 style="display:none">Welcome to Toio Canvas Clicker</h1>
+  <h2 style="display:none">Click the Canvas to select a location for the Toio</h2>
+
+  <h2 id="connecttocube">Connect to Toio Core Cube</h2>
+  <div class="operationContent">
+    <button class="mui-btn mui-btn--small mui-btn--primary mui-btn--raised" id="btConnectCube1">Connect Cube 1</button>
+    <button class="mui-btn mui-btn--small mui-btn--primary mui-btn--raised" disabled id="btConnectCube2" style="visibility:hidden">Connect Cube 2</button>
+    <button class="mui-btn mui-btn--small mui-btn--primary mui-btn--raised" disabled id="btConnectCube3" style="visibility:hidden">Connect Cube 3</button>
+  </div>
+  <div class="position">
+    <button class="mui-btn mui-btn--small mui-btn--primary mui-btn--raised" id="getPos" style="display:none">Get Position</button>
+    <h3 id="xpos" style="display:none">x position: </h3>
+    <h3 id="ypos" style = "display:none">y position: </h3>
+    <h3 id="angle" style="display:none">angle (degrees): </h3>
+  </div>
+
+  <div id="canvas">
+      <div id="toio">
+        </div>
+  </div>
+
+    <script type="text/javascript" src="index.js"></script>
+</body>
