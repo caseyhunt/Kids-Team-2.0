@@ -4,6 +4,7 @@
   "description": "toio socket.io",
   "dependencies": {
     "express": "^4.17.1",
+    "heroku": "^7.59.1",
     "socket.io": "^4.3.1"
   },
   "scripts": {
