@@ -16,7 +16,17 @@ var speed2 = 0x64;
 
 let activeCube = 0;
 
+let crem = false;
+
 let char; //0: move -- 1: sound -- 2: light -- 3:position
+
+var toiomax = [438, 438];
+var toiomin = [58, 60];
+
+var xmax = 308;
+var ymax = 212;
+let toiox = [0];
+let toioy = [0];
 
 
  const CUBE_ID_ARRAY = [ 0, 1, 2 ];
@@ -37,7 +47,6 @@ let char; //0: move -- 1: sound -- 2: light -- 3:position
 
 
    const connectNewCube = () => {
-
        const cube = {
            device:undefined,
            sever:undefined,
@@ -63,8 +72,8 @@ let char; //0: move -- 1: sound -- 2: light -- 3:position
                const cubeID = 1;
                changeConnectCubeButtonStatus( cubeID, undefined, true );
            }else if( cube === gCubes[1] ){
-               //turnOnLightGreen( cube );
-               //spinCube( cube );
+               turnOnLightGreen( cube );
+               spinCube( cube );
                const cubeID = 2;
                changeConnectCubeButtonStatus( cubeID, undefined, true );
            }
@@ -84,17 +93,14 @@ let char; //0: move -- 1: sound -- 2: light -- 3:position
            return cube.service.getCharacteristic( LIGHT_CHARCTERISTICS_UUID );
        }).then( characteristic => {
            cube.lightChar = characteristic;
+           return cube.service.getCharacteristic( POSITION_CHARACTERISTICS_UUID );
+       }).then( characteristic => {
+           cube.posChar = characteristic;
            if( cube === gCubes[0] ){
              turnOnLightCian( cube );
              spinCube( cube );
-             enableCube(0);
-             // enableMoveButtons();
            }else if( cube === gCubes[1] ){
-
-             turnOnLightRed( cube );
-             spinCube( cube );
-             enableCube(1);
-
+             turnOnLightGreen( cube );
            }else{
              turnOnLightRed( cube );
            }
@@ -102,7 +108,6 @@ let char; //0: move -- 1: sound -- 2: light -- 3:position
 
        return cube;
    }
-
 
 
    // Cube Commands
@@ -161,6 +166,8 @@ let char; //0: move -- 1: sound -- 2: light -- 3:position
            console.log('spin');
        }
 
+
+        onStartButtonClick();
    }
 
    const changeButtonStatus = ( btID, enabled ) => {
@@ -192,10 +199,10 @@ let char; //0: move -- 1: sound -- 2: light -- 3:position
    function enableCube(cubeno) {
      if(cubeno == 0){
        console.log('enable cube 1');
-       document.getElementById('mycube1').classList.toggle('disabled');
+       // document.getElementById('mycube1').classList.toggle('disabled');
      }else if(cubeno == 1){
        console.log('enable cube 2');
-       document.getElementById('mycube2').classList.toggle('disabled');
+       // document.getElementById('mycube2').classList.toggle('disabled');
      }
    }
 
@@ -292,7 +299,7 @@ let char; //0: move -- 1: sound -- 2: light -- 3:position
    }
 
 
-let prevtab = document.getElementsByClassName("activetab")[0].id;
+// let prevtab = document.getElementsByClassName("activetab")[0].id;
    function setActive(e){
      console.log('clicked');
 
@@ -313,8 +320,6 @@ let prevtab = document.getElementsByClassName("activetab")[0].id;
      }else{
        activeCube = 2;
        console.log(activeCube);
-       socket.emit('rem');
-
        document.getElementById('remoteconnect').classList.toggle('inactive');
        document.getElementById('remoteconnect').classList.toggle('active');
 
@@ -415,6 +420,192 @@ function stopping(){
    }
  };
 
+function onStartButtonClick() {
+  const buf1 = new Uint8Array([ 0x18, 0x00, 0x01, 0x01 ]);
+  if(gCubes[0] != undefined){
+  gCubes[0].posChar.writeValue(buf1);
+  //posCharacteristic = gCubes[0].posChar.readValue();
+  //console.log(posCharacteristic);
+  return gCubes[0].posChar.startNotifications().then(_ => {
+    console.log('> Notifications started');
+    gCubes[0].posChar.addEventListener('characteristicvaluechanged', function(event)
+    {
+      handleNotifications.call(this, event, 0);
+    }, false);
+
+})
+.catch(error => {
+  console.log('Argh! ' + error);
+});
+}
+}
+
+function handleNotifications(event, cubeno) {
+  console.log("handleNotifications", cubeno);
+  let value = event.target.value;
+
+let a = [];
+// Convert raw data bytes to hex values just for the sake of showing something.
+// In the "real" world, you'd use data.getUint8, data.getUint16 or even
+// TextDecoder to process raw data bytes.
+for (let i = 0; i < value.byteLength; i++) {
+  a.push('0x' + ('00' + value.getUint8(i).toString(16)).slice(-2));
+}
+
+console.log(a);
+var xoff = 32;
+xoff = toiomin[0];
+var yoff = 44;
+yoff = toiomin[1];
+
+if (toiox[0] != undefined){
+toiox[1] = toiox[0];
+toioy[1] = toioy[0];
+}
+
+toiox[0] = value.getInt16(1, true)-xoff;
+toioy[0] = value.getInt16(3, true)-yoff;
+
+var xpos = (value.getInt16(1, true)).toString();
+var ypos = (value.getInt16(3, true)).toString();
+var angle = value.getInt16(5, true).toString();
+
+document.getElementById("xpos").innerHTML = "x position: " + xpos;
+document.getElementById("ypos").innerHTML = "y position: " + ypos;
+document.getElementById("angle").innerHTML = "angle (degrees): " + angle;
+
+drawToio();
+
+}
+
+
+function drawToio(){
+  if(toiox[1] != toiox[0] || toioy[1] != toioy[0]){
+    console.log("toio moving");
+    var ypos = (toioy[0]/toiomax[1])*250;
+    var xpos = (toiox[0]/toiomax[0])*250;
+    document.getElementById("toio").style.left = (xpos).toString() + "px";
+    document.getElementById('toio').style.top = (ypos).toString() + "px";
+    console.log("moving to: x: " + xpos + " y: " + ypos);
+  }
+}
+
+ function getMousePos(){
+  const rect = event.target.getBoundingClientRect();
+  var x = (event.clientX - rect.left)/250;
+  var y = (event.clientY- rect.top)/250;
+  console.log("mouse click x : " + x + " y : " + y);
+  var xdiff = toiomax[0]-toiomin[0];
+  var xmove = parseInt(x*xdiff);
+  var ydiff = toiomax[1] - toiomin[1];
+  var ymove = parseInt(y*ydiff);
+  let ygo;
+  let xgo;
+  console.log('x move: ' + xmove + " , " + "y move: " + ymove);
+
+  if((xmove + toiomin[0]) > 255){
+    // xmove = xmove.toString();
+    xgo = [(xmove+toiomin[0])-255, "0x01"];
+    xgo = [xgo[0].toString(16), xgo[1]];
+      if(xgo[0] == 'NaN'){
+        xgo[0] = "0x00";
+      }else if(xgo[0].length ==1){
+      xgo[0] = "0x0" + xgo[0];
+    }else if(xgo[0].length >= 2){
+      xgo[0] = "0x" + xgo[0];
+    }
+    console.log(xgo);
+  }else{
+    xgo = [xmove+toiomin[0], "0x00"];
+    xgo = [xgo[0].toString(16), xgo[1]];
+    if(xgo[0] == 'NaN'){
+      xgo[0] = "0x00";
+    }else if(xgo[0].length ==1){
+    xgo[0] = "0x0" + xgo[0];
+  }else if(xgo[0].length >= 2){
+    xgo[0] = "0x" + xgo[0];
+  }
+  console.log(xgo);
+  }
+
+  if((ymove + toiomin[1]) > 255){
+    // xmove = xmove.toString();
+    ygo = [(ymove+toiomin[1])-255, "0x01"];
+    ygo = [ygo[0].toString(16), ygo[1]];
+      if(ygo[0] == 'NaN'){
+        ygo[0] = "0x00";
+      }else if(ygo[0].length ==1){
+      ygo[0] = "0x0" + ygo[0];
+    }else if(ygo[0].length >= 2){
+      ygo[0] = "0x" + ygo[0];
+    }
+    console.log(ygo);
+  }else{
+    ygo = [ymove+toiomin[1], "0x00"];
+    ygo = [ygo[0].toString(16), ygo[1]];
+    if(ygo[0] == 'NaN'){
+      ygo[0] = "0x00";
+    }else if(ygo[0].length ==1){
+    ygo[0] = "0x0" + ygo[0];
+  }else if(ygo[0].length >= 2){
+    ygo[0] = "0x" + ygo[0];
+  }
+  console.log(ygo);
+  }
+
+//   var ymove = parseInt((290 * y) + 40);
+//   console.log("x: " + xmove + " y: "+ ymove);
+//   xmove = xmove.toString(16);
+//   ymove = ymove.toString(16);
+//   if(xmove.length ==3){
+//     xmove = "0" + xmove;
+//   }else if (xmove.length == 2){
+//     xmove = "00" + xmove;
+//   }
+//
+//   if(ymove.length ==3){
+//     ymove = "0" + ymove;
+//   }else if (ymove.length == 2){
+//     ymove = "00" + ymove;
+//   }
+//
+//   let xgo = [xmove.slice(2,4), xmove.slice(0,2)];
+//   let ygo = [ymove.slice(2,4), ymove.slice(0,2)];
+//   xgo[0] = "0x" + xgo[0];
+//   xgo[1] = "0x" + xgo[1];
+//   ygo[0] = "0x" + ygo[0];
+//   ygo[1] = "0x" + ygo[1];
+//   xmove = "0x" + xmove.toString(16);
+//   ymove = "0x" + ymove.toString(16);
+//
+//
+//
+//   console.log("x: " + xmove.toString(16) + " y: "+ ymove.toString(16));
+//
+
+var buf = new ArrayBuffer(10)
+var a8 = new Uint8Array(buf);
+var buf1 = new Uint8Array([ 0x03, 0x00, 0x05, 0x00, 0x50, 0x00, 0x00]);
+var buf4 = new Uint8Array([0x03,0x00,0x05,0x00,0x50,0x00, 0x00,xgo[0], xgo[1],ygo[0],ygo[1],0x5a,0x00]);
+
+   if (gCubes[0] != undefined){
+
+       console.log("move cube to position");
+       // console.log("x: " + xmove.toString(16) + " y: "+ ymove.toString(16));
+       cube = gCubes[0];
+
+      console.log(buf4);
+}
+
+if(isconnected1 == true){
+  //btCube(nCube, characteristic, rbuf)
+  socket.emit( 'r' , rcUID , 0 , 0 , buf4 );
+}else if(isconnected1 ==false && gCubes[0] != undefined){
+  cube.moveChar.writeValue(buf4);
+}
+}
+
+
  function calculateSpeed(){
    speed1 = Math.floor(slideval*160);
    speed1 = '0x' + speed1.toString(16);
@@ -477,7 +668,7 @@ function stopping(){
      }else if(x==0 && Math.abs(y)>0.07){
 
    console.log(Math.floor(Math.abs(x)*maxspeed),Math.floor(Math.abs(y)*maxspeed));
-         motor1 = Math.floor(Math.abs(y)*maxspeed);
+     motor1 = Math.floor(Math.abs(y)*maxspeed);
      motor1 = motor1.toString(16);
      motor1 = "0x" + motor1;
      motor2 = motor1;
@@ -538,13 +729,13 @@ function btCube(nCube, characteristic, rbuf){
   if(cube != undefined){
 
   if(characteristic == 0){
-    cube.moveChar.writeValue( buf );
+    cube.moveChar.writeValue( rbuf );
   }else if(characteristic == 1){
-    cube.soundChar.writeValue( buf );
+    cube.soundChar.writeValue( rbuf );
   }else if(characteristic == 2){
-    cube.lightChar.writeValue( buf );
+    cube.lightChar.writeValue( rbuf );
   }else if(characteristic == 3){
-    cube.posChar.writeValue( buf );
+    cube.posChar.writeValue( rbuf );
   }
 }
 
@@ -596,76 +787,107 @@ function btCube(nCube, characteristic, rbuf){
          document.getElementById('cube-control').className = 'active';
        })
 
-       document.getElementById('back').addEventListener('click', async ev=>{
-         document.getElementById('cube-connect').className = 'active';
-         document.getElementById('cube-control').className = 'inactive';
-       })
+       // document.getElementById('back').addEventListener('click', async ev=>{
+       //   document.getElementById('cube-connect').className = 'active';
+       //   document.getElementById('cube-control').className = 'inactive';
+       // })
        for(i=0;i<document.getElementsByClassName('tabitem').length;i++){
        document.getElementsByClassName('tabitem')[i].addEventListener('click', setActive, false);
      }
 
-     document.getElementById('close').addEventListener('click', async ev=>{
-       document.getElementById('remoteconnect').classList.toggle('inactive');
-       document.getElementById('remoteconnect').classList.toggle('active');
+     // document.getElementById('close').addEventListener('click', async ev=>{
+     //   document.getElementById('remoteconnect').classList.toggle('inactive');
+     //   document.getElementById('remoteconnect').classList.toggle('active');
+     //
+     // })
 
+     document.getElementById( 'connect' ).addEventListener('click', async ev=>{
+       if(isconnected1 != true){
+         var user = document.getElementById( 'user' ).value;
+
+         if( user != undefined && user != 0){
+           document.getElementById( 'connected1' ).style.visibility = 'visible';
+           document.getElementById('connected1').innerHTML = "Connected to " + user;
+           document.getElementById('connect').innerHTML = "Disconnect";
+           document.getElementById('user').style.visibility = 'hidden';
+           socket.emit('user rc',  user)
+            isconnected1 = true;
+            return false;
+         }
+
+       }else{
+         document.getElementById('connect').innerHTML = "Connect";
+         document.getElementById('user').style.visibility = 'visible';
+         document.getElementById('connected1').style.visibility = 'hidden';
+         isconnected1 = false;
+         rcUID = undefined;
+       }
      })
 
 
-      document.getElementById( 'connect' ).addEventListener( 'click', async ev=> {
-        if(isconnected1 != true){
-        var user = document.getElementById("user").value;
-        if(user!=undefined && user !=0){
-        document.getElementById('connected1').style.visibility = 'visible';
-        document.getElementById('rmt').innerHTML = "Connected to " + user;
-        document.getElementById('cwith').innerHTML = "Connected to " + user + ". Do you want to disconnect?";
-        document.getElementById('connect').innerHTML = "Disconnect";
-        document.getElementById('user').style.visibility = 'hidden';
-        document.getElementById('remoteconnect').classList.toggle('inactive');
-        document.getElementById('remoteconnect').classList.toggle('active');
-        socket.emit('user rc',  user)
-        isconnected1 = true;
-        return false;
-      }
-      }else{
-        document.getElementById('connect').innerHTML = "Connect";
-        document.getElementById('user').style.visibility = 'visible';
-        document.getElementById('connected1').style.visibility = 'hidden';
-        document.getElementById('rmt').innerHTML = "Remote Cube";
-        document.getElementById('cwith').innerHTML = "Who Do You Want To Connect With?";
-        isconnected1 = false;
-        rcUID = undefined;
-      }
-      } )
+      // document.getElementById( 'connect' ).addEventListener( 'click', async ev=> {
+      //   if(isconnected1 != true){
+      //   var user = document.getElementById("user").value;
+      //   if(user!=undefined && user !=0){
+      //   document.getElementById('connected1').style.visibility = 'visible';
+      //   document.getElementById('rmt').innerHTML = "Connected to " + user;
+      //   document.getElementById('cwith').innerHTML = "Connected to " + user + ". Do you want to disconnect?";
+      //   document.getElementById('connect').innerHTML = "Disconnect";
+      //   document.getElementById('user').style.visibility = 'hidden';
+      //   document.getElementById('remoteconnect').classList.toggle('inactive');
+      //   document.getElementById('remoteconnect').classList.toggle('active');
+      //   socket.emit('user rc',  user)
+      //   isconnected1 = true;
+      //   return false;
+      // }
+      // }else{
+      //   document.getElementById('connect').innerHTML = "Connect";
+      //   document.getElementById('user').style.visibility = 'visible';
+      //   document.getElementById('connected1').style.visibility = 'hidden';
+      //   document.getElementById('rmt').innerHTML = "Remote Cube";
+      //   document.getElementById('cwith').innerHTML = "Who Do You Want To Connect With?";
+      //   isconnected1 = false;
+      //   rcUID = undefined;
+      // }
+      // } )
+      //
+      // document.getElementById( 'connect2' ).addEventListener( 'click', async ev=> {
+      //   //if the user is not connected to another user, then
+      //   if(isconnected2 != true){
+      //     var user = document.getElementById("user1").value;
+      //       if(user != undefined && user !=0){
+      //         document.getElementById('connected2').style.visibility = 'visible';
+      //         document.getElementById('connected2').innerHTML = "Connected to " + user;
+      //         //change second connect button to connected
+      //         document.getElementById('connect2').innerHTML = "Disconnect";
+      //         //hide the dropdown
+      //         document.getElementById('user1').style.visibility = 'hidden';
+      //         //send the websocket the identity of the user
+      //         //user remote connect 2, user identity
+      //         socket.emit('user rc 2',  user);
+      //         console.log(user);
+      //         console.log(user.length);
+      //         isconnected2 = true;
+      //   }
+      //   }else{
+      //       document.getElementById('connect2').innerHTML = "Connect";
+      //       document.getElementById('user1').style.visibility = 'visible';
+      //         document.getElementById('connected1').style.visibility = 'hidden';
+      //       isconnected1 = false;
+      //       rcUID2 = undefined;
+      //   }
+      // } )
 
-      document.getElementById( 'connect2' ).addEventListener( 'click', async ev=> {
-        //if the user is not connected to another user, then
-        if(isconnected2 != true){
-          var user = document.getElementById("user1").value;
-            if(user != undefined && user !=0){
-              document.getElementById('connected2').style.visibility = 'visible';
-              document.getElementById('connected2').innerHTML = "Connected to " + user;
-              //change second connect button to connected
-              document.getElementById('connect2').innerHTML = "Disconnect";
-              //hide the dropdown
-              document.getElementById('user1').style.visibility = 'hidden';
-              //send the websocket the identity of the user
-              //user remote connect 2, user identity
-              socket.emit('user rc 2',  user);
-              console.log(user);
-              console.log(user.length);
-              isconnected2 = true;
-        }
-        }else{
-            document.getElementById('connect2').innerHTML = "Connect";
-            document.getElementById('user1').style.visibility = 'visible';
-              document.getElementById('connected1').style.visibility = 'hidden';
-            isconnected1 = false;
-            rcUID2 = undefined;
-        }
-      } )
 
+            document.getElementById('canvas').addEventListener('click', async ev => {
+              getMousePos();
+            });
 
+            document.getElementById('canvas').addEventListener('touchstart', async ev => {
+              getMousePos();
+            });
    }
+
 
 
 
@@ -742,13 +964,11 @@ function btCube(nCube, characteristic, rbuf){
          }
     }
    console.log(usersList, " ", newUser);
-
-
      });
 
 
 
-     socket.on('user left', (userName) => {
+    socket.on('user left', (userName) => {
     console.log(userName, " left the room");
     if(document.getElementById(userName) != null){
     var x = document.getElementById(userName);
@@ -791,8 +1011,9 @@ socket.on('joystick', (nCube, x, y,speed) =>{
 });
 
 
-socket.on('r', (nCube, characteristic, rbuf) = >{
+socket.on('r', (nCube, characteristic, rbuf) =>{
   btCube(nCube, characteristic, rbuf);
+  console.log('remote control')
 });
 
    initialize();

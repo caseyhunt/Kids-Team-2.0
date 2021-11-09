@@ -118,6 +118,7 @@ socket.on('rem', () => {
 
 
 socket.on('r', (rcUID, nCube,characteristic, rbuf) => {
+  console.log('r ' + rcUID);
     if(rcUID != undefined){
       io.to(rcUID).emit('r', nCube, characteristic, rbuf);
     }

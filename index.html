@@ -12,28 +12,35 @@
   <link rel="icon" href="./images/favicon.ico">
 
   <!-- Stylesheet -->
-  <link href="https://cdn.muicss.com/mui-0.10.0/css/mui.min.css" rel="stylesheet" type="text/css"/>
-  <script src="https://cdn.muicss.com/mui-0.10.0/js/mui.min.js"></script>
-  <link rel="stylesheet" type="text/css" href="static/style.css">
-  <link href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" rel="stylesheet">
-
-  <!-- dropify(overrides file input) -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <link rel='stylesheet' href='https://cdn.rawgit.com/JeremyFagis/dropify/master/dist/css/dropify.min.css'/>
-  <script src='https://cdn.rawgit.com/JeremyFagis/dropify/master/dist/js/dropify.min.js'></script>
+  <link rel="stylesheet" type="text/css" href="style.css">
 
   <!-- Code prettify -->
   <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
 </head>
 <body>
+  <div id="name-form">
+    <h1>Welcome to Toio Remote Control</h1>
+    <h2>Add your name below to get started!</h2>
+    <form onsubmit="return false;">
+      <input type="text" id="name">
+    <br/>
+      <button class="mui-btn mui-btn--small mui-btn--primary mui-btn--raised" id="namesubmit" >Submit</button>
+    </form>
+</div>
   <H1 style="display:none">Welcome to Toio Canvas Clicker</h1>
   <h2 style="display:none">Click the Canvas to select a location for the Toio</h2>
-
-  <h2 id="connecttocube">Connect to Toio Core Cube</h2>
-  <div class="operationContent">
-    <button class="mui-btn mui-btn--small mui-btn--primary mui-btn--raised" id="btConnectCube1">Connect Cube 1</button>
-    <button class="mui-btn mui-btn--small mui-btn--primary mui-btn--raised" disabled id="btConnectCube2" style="visibility:hidden">Connect Cube 2</button>
-    <button class="mui-btn mui-btn--small mui-btn--primary mui-btn--raised" disabled id="btConnectCube3" style="visibility:hidden">Connect Cube 3</button>
+  <div id="cube-connect" class="inactive">
+          <div id="operation" class="operation">
+            <h2 id="connecttocube">Connect to Toio Core Cube</h2>
+            <div class="operationContent">
+              <button class="mui-btn mui-btn--small mui-btn--primary mui-btn--raised" id="btConnectCube1">Connect Cube 1</button>
+              <button class="mui-btn mui-btn--small mui-btn--primary mui-btn--raised" disabled id="btConnectCube2">Connect Cube 2</button>
+              <button class="mui-btn mui-btn--small mui-btn--primary mui-btn--raised" disabled id="btConnectCube3" style="visibility:hidden">Connect Cube 3</button>
+          </div>
+          <div class="footer">
+            <button id="next">Continue</button>
+          </div>
+        </div>
   </div>
   <div class="position">
     <button class="mui-btn mui-btn--small mui-btn--primary mui-btn--raised" id="getPos" style="display:none">Get Position</button>
@@ -41,11 +48,20 @@
     <h3 id="ypos" style = "display:none">y position: </h3>
     <h3 id="angle" style="display:none">angle (degrees): </h3>
   </div>
+  <div id="cube-control" class="inactive">
+    <form id="cube1" onsubmit="return false;">
 
-  <div id="canvas">
-      <div id="toio">
-        </div>
+  <h3 id="connected1"></h3>
+    <select name="user" id="user">
+    </select>
+    <button  id="connect">Connect</button>
+</form>
+    <div id="canvas">
+        <div id="toio">
+          </div>
+    </div>
   </div>
-
-    <script type="text/javascript" src="index.js"></script>
+      <script src="/socket.io/socket.io.js"></script>
+      <script src="client.js"></script>
+    <!-- <script type="text/javascript" src="index.js"></script> -->
 </body>

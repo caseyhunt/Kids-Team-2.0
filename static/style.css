@@ -2,9 +2,7 @@
   margin-left: 31px;
 }
 
-#cube-control{
-  visibility:hidden;
-}
+
 
 body{
   padding-left:50px;
@@ -119,6 +117,19 @@ h4{
   border-radius:10px;
   width: 250px;
   height: 250px;
+  margin: auto;
+}
+
+select{
+  margin:auto;
+  display: block;
+}
+
+#connected1{
+  display: block;
+  margin: auto;
+  text-align:center;
+  margin-top: 5px;
 }
 
 #toio{
@@ -142,4 +153,182 @@ h4{
 
 #light{
   margin-bottom: 40px;
+}
+
+
+html{
+  overflow: hidden;
+
+}
+
+#cube-control{
+  background-color:white;
+  width: 80vw;
+  min-height: 40vh;
+  margin: auto;
+  margin-top: 1vh;
+  padding: 15px 30px 10px 30px;
+  border-radius: 10px;
+  filter: drop-shadow(8px 8px 3px rgba(197, 199, 199,.3));
+}
+
+#cube-connect{
+  background-color:white;
+  width: 80vw;
+  min-height: 40vh;
+  margin: auto;
+  margin-top: 3vh;
+  padding: 50px 30px 10px 30px;
+  border-radius: 10px;
+  filter: drop-shadow(8px 8px 3px rgba(197, 199, 199,.3));
+}
+
+#cube-connect button{
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+#next{
+  margin-right: 20px;
+  text-align: right !important;
+}
+
+#back{
+  margin-left: 20px;
+  text-align: left !important;
+  width: 160px !important;
+  padding-left:10px;
+}
+
+#cube2control{
+  display:none;
+}
+
+.inactive{
+  display:none;
+}
+
+.active{
+  display: block;
+}
+
+#name-form{
+  background-color:white;
+  width: 80vw;
+  min-height: 40vh;
+  margin: auto;
+  margin-top: 3vh;
+  padding: 50px 30px 10px 30px;
+  border-radius: 10px;
+  filter: drop-shadow(8px 8px 3px rgba(197, 199, 199,.3));
+}
+
+body{
+  background:#e4edec;
+
+}
+
+h2{
+  font-family: helvetica;
+  font-size: 20px;
+  text-align: center;
+  margin-bottom: 50px;
+  font-weight:600;
+}
+
+h1{
+  font-family: helvetica;
+  font-weight: 100;
+  font-size: 25px;
+  text-align: center;
+}
+
+input{
+  height: 5vh;
+  width: 20vw;
+  display:block;
+  margin: auto;
+  font-size: 20px;
+  text-align: center;
+}
+
+button{
+  min-height: 5vh;
+  width: 25vw;
+  display:block;
+  margin: auto;
+    font-size: 25px;
+    text-align: right;
+    padding-right: 30px;
+}
+
+#tabs{
+  display:flex;
+}
+
+.tabitem{
+  font-size: 15px !important;
+  flex-grow:1;
+  margin-bottom: 0;
+  border:rgb(200,200,200) 1px solid;
+  padding: 10px;
+}
+
+.activetab{
+  border-bottom: none;
+}
+
+.inactivetab{
+  background-color: rgb(220,220,220);
+  font-weight: 300;
+}
+
+
+
+canvas{
+  margin:auto;
+  display: block;
+}
+
+#control{
+  border:rgb(200,200,200) 1px solid;
+  margin-bottom: 10px;
+  border-top: none;
+  margin-top: 0;
+  padding: 15px 0px 15px 0px;
+}
+
+.disabled{
+  color: rgb(180,180,180);
+}
+
+#remoteconnect{
+  position: absolute;
+  background-color:white;
+  border:rgb(200,200,200) 1px solid;
+
+  border-radius:10px;
+  top:30%;
+  z-index: 1;
+  left:20%;
+  padding: 20px;
+  filter: drop-shadow(8px 8px 3px rgba(197, 199, 199,.3));
+
+}
+
+#remoteconnect form{
+  display: block;
+  margin:auto;
+  text-align:center;
+}
+
+#close{
+  width: 30px;
+  margin-right:5px;
+}
+
+select{
+  margin-bottom: 10px;
+  height: 7vh;
+  font-size: 20px;
 }
