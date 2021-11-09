@@ -75,15 +75,14 @@ socket.on('bt', (name, cube) =>{
 })
 
 
-
-
-socket.on('user rc', (user) => {
-  let userID = activeUsers[activeUsers.findIndex(item => item.name == user)].userID
-  socket.emit('user rc', userID);
+socket.on('user rc', (user, name) => {
+  let userID = activeUsers[activeUsers.findIndex(item => item.name == user)].userID;
+  socket.emit('user rc', userID, socket.id, name);
+  io.to(userID).emit('remote user', socket.id, name);
 })
 
 socket.on('user rc 2', (user) => {
-  let userID = activeUsers[activeUsers.findIndex(item => item.name == user)].userID
+  let userID = activeUsers[activeUsers.findIndex(item => item.name == user)].userID;
   socket.emit('user rc 2', userID);
 })
 
@@ -95,6 +94,11 @@ socket.on('remote', (type, rcUID, nCube,speed) => {
   let moveType = ['forward', 'stop', 'back', 'left', 'right', 'charge'];
    io.to(rcUID).emit(moveType[type], nCube, speed);
  }
+})
+
+socket.on('rc end', (rcUID) => {
+  console.log(socket.id + " disconnected from " + rcUID);
+  io.to(rcUID).emit('rc end', socket.id);
 })
 
 socket.on('remotejoystick', (rcUID, nCube,x,y,speed1) => {
@@ -116,13 +120,20 @@ socket.on('rem', () => {
       socket.emit('handshake', activeUsers);
 })
 
+socket.on('rpos', (xpos, ypos, name, pUID) =>{
+  // console.log(socket.id, xpos, ypos);
+  io.to(pUID).emit('rpos', xpos, ypos, name);
+})
 
-socket.on('r', (rcUID, nCube,characteristic, rbuf) => {
+
+socket.on('r', (rcUID, nCube,characteristic, rbuf, name) => {
   console.log('r ' + rcUID);
     if(rcUID != undefined){
-      io.to(rcUID).emit('r', nCube, characteristic, rbuf);
+      io.to(rcUID).emit('r', nCube, characteristic, rbuf, name);
     }
 })
+
+
 
 });
 
