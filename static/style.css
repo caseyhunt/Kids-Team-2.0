@@ -5,7 +5,7 @@
 
 
 body{
-  padding-left:50px;
+  /* padding-left:50px; */
   padding-top: 2px;
 }
 
@@ -15,8 +15,8 @@ body{
 
 #slider1, #slider2{
   margin-left:100px;
-  width: 200px;
-  height: 25px;
+  width: 100px;
+  height: 18px;
 }
 
 
@@ -72,8 +72,8 @@ body{
 
 
 #slider1::-moz-range-thumb {
-  width: 25px;
-  height: 25px;
+  width: 15px;
+  height: 15px;
   background: #2196F3;
   cursor: pointer;
 }
@@ -115,8 +115,8 @@ h4{
 #canvas{
   border:1px rgb(200,200,200) solid;
   border-radius:10px;
-  width: 250px;
-  height: 250px;
+  width: 200px;
+  height: 200px;
   margin: auto;
 }
 
@@ -156,7 +156,7 @@ select{
 }
 
 .position, #light{
-  margin-top: 40px;
+  /* margin-top: 40px; */
 }
 
 #getPos{
@@ -269,7 +269,7 @@ button{
   width: 25vw;
   display:block;
   margin: auto;
-    font-size: 25px;
+    font-size: 18px;
     text-align: right;
     padding-right: 30px;
 }
@@ -343,4 +343,23 @@ select{
   margin-bottom: 10px;
   height: 7vh;
   font-size: 20px;
+}
+
+#slider{
+  display:grid;
+  grid-template-columns: 1fr 4fr;
+  grid-template-rows: 1fr;
+  justify-items : end;
+  width: 40%;
+  margin-left:7%;
+  margin-bottom: 10px;
+  grid-gap: 60px;
+}
+
+.labl{
+  display:inline;
+}
+
+.slider{
+  margin-top: -20px;
 }

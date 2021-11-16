@@ -14,6 +14,11 @@ var speed = 0x64;
 var speed1 = 0x64;
 var speed2 = 0x64;
 
+let ygo;
+let xgo;
+
+var angle = [0x5a,0x00];
+
 let activeCube = 0;
 
 let crem = false;
@@ -390,7 +395,7 @@ function onStartButtonClick() {
 }
 
 function handleNotifications(event, cubeno) {
-  console.log("handleNotifications", cubeno);
+  // console.log("handleNotifications", cubeno);
   let value = event.target.value;
 
 let a = [];
@@ -436,8 +441,8 @@ if(toiox[1] != toiox[0] || toioy[1] != toioy[0]){
 
 
 function drawToio(cnum, x, y){
-  var ypos = (y/toiomax[1])*250;
-  var xpos = (x/toiomax[0])*250;
+  var ypos = (y/toiomax[1])*200;
+  var xpos = (x/toiomax[0])*200;
   if(cnum == 0){
     //console.log("toio moving");
     document.getElementById("toio").style.left = (xpos).toString() + "px";
@@ -460,19 +465,18 @@ function drawToio(cnum, x, y){
 
  function getMousePos(){
   const rect = event.target.getBoundingClientRect();
-  var x = (event.clientX - rect.left)/250;
-  var y = (event.clientY- rect.top)/250;
+  var x = (event.clientX - rect.left)/200;
+  var y = (event.clientY- rect.top)/200;
   console.log("mouse click x : " + x + " y : " + y);
   var xdiff = toiomax[0]-toiomin[0];
   var xmove = parseInt(x*xdiff);
   var ydiff = toiomax[1] - toiomin[1];
   var ymove = parseInt(y*ydiff);
-  let ygo;
-  let xgo;
+
   console.log('x move: ' + xmove + " , " + "y move: " + ymove);
   if(isconnected1 == true){
-    // xmove = xmove - document.getElementById('toio').style.width;
-    // ymove = ymove - document.getElementById('toio').style.height;
+    xmove = xmove - document.getElementsByClassName('toio')[0].style.width;
+    ymove = ymove - document.getElementsByClassName('toio')[0].style.height;
   }
   if((xmove + toiomin[0]) > 255){
     // xmove = xmove.toString();
@@ -527,7 +531,7 @@ function drawToio(cnum, x, y){
 
 var buf = new ArrayBuffer(10)
 var a8 = new Uint8Array(buf);
-var buf4 = new Uint8Array([0x03,0x00,0x05,0x00,0x50,0x00, 0x00,xgo[0], xgo[1],ygo[0],ygo[1],0x5a,0x00]);
+var buf4 = new Uint8Array([0x03,0x00,0x05,0x00,speed1,0x00, 0x00,xgo[0], xgo[1],ygo[0],ygo[1],angle[0],angle[1]]);
 
    if (gCubes[0] != undefined){
        console.log("move cube to position");
@@ -539,11 +543,33 @@ var buf4 = new Uint8Array([0x03,0x00,0x05,0x00,0x50,0x00, 0x00,xgo[0], xgo[1],yg
 if(isconnected1 == true){
   //btCube(nCube, characteristic, rbuf)
 
-  var buf4 = new Uint8Array([0x03,0x00,0x05,0x00,0x50,0x00, 0x00,xgo[0], xgo[1],ygo[0],ygo[1],0x5a,0x00]);
+  var buf4 = new Uint8Array([0x03,0x00,0x05,0x00,speed1,0x00, 0x00,xgo[0], xgo[1],ygo[0],ygo[1],angle[0],angle[1]]);
   socket.emit( 'r' , rcUID , 0 , 0 , buf4 , name );
 }else if(isconnected1 ==false && gCubes[0] != undefined){
   cube.moveChar.writeValue(buf4);
 }
+}
+
+function changeAngle(){
+  var buf = new ArrayBuffer(10)
+  var a8 = new Uint8Array(buf);
+  var buf4 = new Uint8Array([0x03,0x00,0x05,0x00,speed1,0x00, 0x00,xgo[0], xgo[1],ygo[0],ygo[1],angle[0],angle[1]]);
+
+     if (gCubes[0] != undefined){
+         console.log("move cube to position");
+         // console.log("x: " + xmove.toString(16) + " y: "+ ymove.toString(16));
+         cube = gCubes[0];
+        console.log(buf4);
+  }
+
+  if(isconnected1 == true){
+    //btCube(nCube, characteristic, rbuf)
+
+    var buf4 = new Uint8Array([0x03,0x00,0x05,0x00,speed1,0x00, 0x00,xgo[0], xgo[1],ygo[0],ygo[1],angle[0],angle[1]]);
+    socket.emit( 'r' , rcUID , 0 , 0 , buf4 , name );
+  }else if(isconnected1 ==false && gCubes[0] != undefined){
+    cube.moveChar.writeValue(buf4);
+  }
 }
 
 
@@ -681,6 +707,43 @@ function btCube(nCube, characteristic, rbuf){
 }
 
  }
+
+function littleEndian(num){
+  let outarr = [];
+  num = parseInt(num);
+  if(num<65,535){
+    if(num<255){
+      outarr = [num, "0x00"];
+      outarr = [outarr[0].toString(16), outarr[1]];
+      if(outarr[0] == 'NaN'){
+        outarr[0] = "0x00";
+      }else if(outarr[0].length ==1){
+      outarr[0] = "0x0" + outarr[0];
+    }else if(outarr[0].length >= 2){
+      outarr[0] = "0x" + outarr[0];
+    }
+  }else{
+    outarr = [num-255, "0x01"];
+    outarr = [outarr[0].toString(16), outarr[1]];
+      if(outarr[0] == 'NaN'){
+      outarr[0] = "0x00";
+    }else if(outarr[0].length ==1){
+      outarr[0] = "0x0" + outarr[0];
+    }else if(outarr[0].length >= 2){
+      outarr[0] = "0x" + outarr[0];
+    }
+    }
+
+    return outarr;
+
+
+  }else{
+    console.log('ERROR: You are trying to encode a little endian number greater than two bits.');
+    console.log('please see function littleEndian() for more information');
+    return false;
+  }
+
+}
 
 
 
@@ -1037,5 +1100,21 @@ if (index > -1) {
 }
 console.log('remote user disconnected, removing ' + rUID +" from list of connected users: " + pUID);
 })
+
+slider1.oninput = function() {
+val = parseInt(document.getElementById("slider1").value);
+speed1 = littleEndian(val)[0];
+// console.log((254).toString(16))
+console.log(val);
+console.log(speed1);
+}
+
+slider2.oninput = function(){
+  s2val = parseInt(slider2.value);
+  angle = littleEndian(s2val);
+  console.log("angle: " + s2val);
+  console.log("angle: " + angle);
+  changeAngle();
+}
 
    initialize();
