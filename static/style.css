@@ -97,7 +97,7 @@ h4{
 }
 
 #cube1, #cube2{
-  margin-bottom: 20px;
+  margin-bottom: 0px;
 }
 
 #cube1control, #cube2control{
@@ -353,8 +353,8 @@ select{
   grid-template-rows: 1fr;
   justify-items : end;
   width: 30%;
-  margin-left:27vw;
-  margin-bottom: 10px;
+  margin-left:20vw;
+  margin-bottom: 7px;
   grid-gap: 60px;
 }
 
