@@ -16,6 +16,10 @@
 
   <!-- Code prettify -->
   <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+
+  <!-- P5JS Stuff -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
 </head>
 <body>
   <div id="name-form">
@@ -50,7 +54,10 @@
   </div>
   <div id="cube-control" class="inactive">
     <form id="cube1" onsubmit="return false;">
-
+      <label class="switch">
+  <input type="checkbox" id='toggle'>
+  <span class="sslider"></span>
+</label>
   <h3 id="connected1"></h3>
     <select name="user" id="user">
     </select>
@@ -61,17 +68,20 @@
   <h3 class="labl">Speed</h3>
 <input type="range"  min="15" max="120" value="50" class='slider' id="slider1">
 </div>
-<div class="sliders">
+<!-- <div class="sliders">
   <h3 class="labl">Angle</h3>
 <input type="range"  min="0" max="360" value="90" class='slider' id="slider2">
+</div> -->
+
+<div id="dial">
 </div>
+
 </div>
     <div id="canvas">
-
-
-    </div>
+  </div>
   </div>
       <script src="/socket.io/socket.io.js"></script>
       <script src="client.js"></script>
+      <script type="text/javascript" src="dial.js"></script>
     <!-- <script type="text/javascript" src="index.js"></script> -->
 </body>

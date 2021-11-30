@@ -15,6 +15,7 @@ body{
 
 #slider1, #slider2{
   margin-left:100px;
+
   width: 100px;
   height: 18px;
 }
@@ -114,6 +115,7 @@ h4{
 
 #canvas{
   border:1px rgb(200,200,200) solid;
+  background-color:white;
   border-radius:10px;
   width: 200px;
   height: 200px;
@@ -217,7 +219,7 @@ html{
 }
 
 .inactive{
-  display:none;
+  display:none !important;
 }
 
 .active{
@@ -350,8 +352,8 @@ select{
   grid-template-columns: 1fr 4fr;
   grid-template-rows: 1fr;
   justify-items : end;
-  width: 40%;
-  margin-left:7%;
+  width: 30%;
+  margin-left:27vw;
   margin-bottom: 10px;
   grid-gap: 60px;
 }
@@ -362,4 +364,70 @@ select{
 
 .slider{
   margin-top: -20px;
+}
+
+.sliders{
+    margin-top: 50px;
+}
+
+#dial{
+  /* margin-top: -100px; */
+}
+
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.sslider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.sslider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .sslider {
+  background-color: #2196F3;
+}
+
+input:focus + .sslider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .sslider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+.bbg{
+  background-color:#9aa2ad !important;
 }

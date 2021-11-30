@@ -17,6 +17,8 @@ var speed2 = 0x64;
 let ygo;
 let xgo;
 
+let cubeControl = false;
+
 var angle = [0x5a,0x00];
 
 let activeCube = 0;
@@ -34,6 +36,8 @@ let toiox = [0];
 let toioy = [0];
 
 let pUID = [];
+
+let directControl = false;
 
 
  const CUBE_ID_ARRAY = [ 0, 1, 2 ];
@@ -399,6 +403,8 @@ function handleNotifications(event, cubeno) {
   let value = event.target.value;
 
 let a = [];
+
+
 // Convert raw data bytes to hex values just for the sake of showing something.
 // In the "real" world, you'd use data.getUint8, data.getUint16 or even
 // TextDecoder to process raw data bytes.
@@ -406,6 +412,18 @@ for (let i = 0; i < value.byteLength; i++) {
   a.push('0x' + ('00' + value.getUint8(i).toString(16)).slice(-2));
 }
 
+let xrem;
+let yrem;
+
+xrem = [a[7], a[8]];
+yrem = [a[9], a[10]];
+
+// if(directControl == true){
+// // console.log(a);
+//
+// // console.log("xpos: " + a[7] + " " + a[8]);
+// // console.log("ypos: " + a[9] + " " + a[10]);
+// }
 //console.log(a);
 var xoff = 32;
 xoff = toiomin[0];
@@ -429,10 +447,15 @@ document.getElementById("ypos").innerHTML = "y position: " + ypos;
 document.getElementById("angle").innerHTML = "angle (degrees): " + angle;
 
 if(toiox[1] != toiox[0] || toioy[1] != toioy[0]){
+
   drawToio(0, toiox[0], toioy[0]);
+  if(directControl == true){
+    socket.emit('dc', xrem, yrem, ang, name, rcUID, directControl, speed1);
+  }
   if(pUID.length>0){
     for(i=0; i<pUID.length; i++){
-  socket.emit('rpos', toiox[0], toioy[0], name, pUID[i]);
+  socket.emit('rpos', toiox[0], toioy[0], 0, name, pUID[i], directControl, a);
+
   }
   }
 }
@@ -531,7 +554,7 @@ function drawToio(cnum, x, y){
 
 var buf = new ArrayBuffer(10)
 var a8 = new Uint8Array(buf);
-var buf4 = new Uint8Array([0x03,0x00,0x05,0x00,speed1,0x00, 0x00,xgo[0], xgo[1],ygo[0],ygo[1],angle[0],angle[1]]);
+var buf4 = new Uint8Array([0x03,0x00,0x05,0x00,speed1,0x00, 0x00,xgo[0], xgo[1],ygo[0],ygo[1],ang[0],ang[1]]);
 
    if (gCubes[0] != undefined){
        console.log("move cube to position");
@@ -543,14 +566,20 @@ var buf4 = new Uint8Array([0x03,0x00,0x05,0x00,speed1,0x00, 0x00,xgo[0], xgo[1],
 if(isconnected1 == true){
   //btCube(nCube, characteristic, rbuf)
 
-  var buf4 = new Uint8Array([0x03,0x00,0x05,0x00,speed1,0x00, 0x00,xgo[0], xgo[1],ygo[0],ygo[1],angle[0],angle[1]]);
+  var buf4 = new Uint8Array([0x03,0x00,0x05,0x00,speed1,0x00, 0x00,xgo[0], xgo[1],ygo[0],ygo[1],ang[0],ang[1]]);
   socket.emit( 'r' , rcUID , 0 , 0 , buf4 , name );
 }else if(isconnected1 ==false && gCubes[0] != undefined){
   cube.moveChar.writeValue(buf4);
 }
 }
 
-function changeAngle(){
+function changeAngle(a){
+  angle[0]=a[0];
+  angle[1] = a[1];
+  console.log(angle);
+  console.log(xgo);
+  console.log(ygo);
+  console.log(speed1);
   var buf = new ArrayBuffer(10)
   var a8 = new Uint8Array(buf);
   var buf4 = new Uint8Array([0x03,0x00,0x05,0x00,speed1,0x00, 0x00,xgo[0], xgo[1],ygo[0],ygo[1],angle[0],angle[1]]);
@@ -789,6 +818,7 @@ function littleEndian(num){
        document.getElementById('next').addEventListener('click', async ev=>{
          document.getElementById('cube-connect').className = 'inactive';
          document.getElementById('cube-control').className = 'active';
+        cubeControl = true;
        })
 
        // document.getElementById('back').addEventListener('click', async ev=>{
@@ -804,7 +834,12 @@ function littleEndian(num){
      //   document.getElementById('remoteconnect').classList.toggle('active');
      //
      // })
-
+     document.getElementById('toggle').addEventListener('click', async ev =>{
+       document.getElementById('cube-control').classList.toggle('bbg');
+       // document.getElementById('slider').classList.toggle('inactive');
+       directControl = !directControl;
+       console.log(directControl);
+     })
      document.getElementById( 'connect' ).addEventListener('click', async ev=>{
        if(isconnected1 != true){
          var user = document.getElementById( 'user' ).value;
@@ -1026,11 +1061,27 @@ socket.on('r', (nCube, characteristic, rbuf, uname) =>{
   console.log('remote control', uname);
 });
 
-socket.on('rpos', (x, y, uname) =>{
+socket.on('rpos', (x, y, an, uname, dirCon, a) =>{
   if(uname != name){
   drawToio(1, x,y);
+  if(dirCon == true){
+    let buf4 = new Uint8Array([0x03,0x00,0x05,0x00,speed1,0x00, 0x00,x[0], x[1],y[0],y[1],an[0],an[1]]);
+    console.log(buf4);
+      btCube(0, 0, buf4);
+  }
 }
   console.log('rpos ' + x + " , " + y);
+});
+
+socket.on('dc', (x, y, an, uname, dirCon, speed) =>{
+  if(uname != name){
+  if(dirCon == true){
+    let buf4 = new Uint8Array([0x03,0x00,0x05,0x00,speed,0x00, 0x00,x[0], x[1],y[0],y[1],an[0],an[1]]);
+    console.log(buf4);
+      btCube(0, 0, buf4);
+  }
+}
+  // console.log('dc ' + x + " , " + y);
 });
 
 socket.on('forward', (nCube, speed) => {
@@ -1109,12 +1160,12 @@ console.log(val);
 console.log(speed1);
 }
 
-slider2.oninput = function(){
-  s2val = parseInt(slider2.value);
-  angle = littleEndian(s2val);
-  console.log("angle: " + s2val);
-  console.log("angle: " + angle);
-  changeAngle();
-}
+// slider2.oninput = function(){
+//   s2val = parseInt(slider2.value);
+//   angle = littleEndian(s2val);
+//   console.log("angle: " + s2val);
+//   console.log("angle: " + angle);
+//   changeAngle();
+// }
 
    initialize();

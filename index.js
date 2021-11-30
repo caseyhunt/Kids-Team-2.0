@@ -120,14 +120,19 @@ socket.on('rem', () => {
       socket.emit('handshake', activeUsers);
 })
 
-socket.on('rpos', (xpos, ypos, name, pUID) =>{
+socket.on('rpos', (xpos, ypos, ang, name, pUID, directControl, a) =>{
   // console.log(socket.id, xpos, ypos);
-  io.to(pUID).emit('rpos', xpos, ypos, name);
+  io.to(pUID).emit('rpos', xpos, ypos, ang, name, directControl, a);
+})
+
+socket.on('dc', (xpos, ypos, ang, name, pUID, directControl, a) =>{
+  // console.log(socket.id, xpos, ypos);
+  io.to(pUID).emit('dc', xpos, ypos, ang, name, directControl, a);
 })
 
 
 socket.on('r', (rcUID, nCube,characteristic, rbuf, name) => {
-  console.log('r ' + rcUID);
+  // console.log('r ' + rcUID);
     if(rcUID != undefined){
       io.to(rcUID).emit('r', nCube, characteristic, rbuf, name);
     }
