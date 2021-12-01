@@ -836,7 +836,7 @@ function littleEndian(num){
      // })
      document.getElementById('toggle').addEventListener('click', async ev =>{
        document.getElementById('cube-control').classList.toggle('bbg');
-       // document.getElementById('slider').classList.toggle('inactive');
+        document.getElementById('canvas').classList.toggle('inactive');
        directControl = !directControl;
        console.log(directControl);
      })
